@@ -1,0 +1,4 @@
+# The expensive gate. Typecheck + full test suite before anything leaves the machine,
+# so CI failures are the exception rather than the normal feedback loop.
+npm run typecheck
+npm test -- --passWithNoTests

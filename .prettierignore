@@ -1,0 +1,7 @@
+node_modules/
+android/
+ios/
+coverage/
+src/generated/
+*.lock
+package-lock.json

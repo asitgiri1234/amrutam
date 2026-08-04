@@ -1,0 +1,3 @@
+# Fast feedback only: lint + format the staged files.
+# Anything slower (typecheck, full test suite) runs on pre-push so commits stay cheap.
+npx lint-staged

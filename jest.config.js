@@ -1,0 +1,75 @@
+/**
+ * Jest configuration.
+ *
+ * `moduleNameMapper` mirrors the aliases in tsconfig.json and babel.config.js.
+ * Keeping the three in sync is the price of absolute imports; the alternative
+ * (deep relative paths) costs more on every single refactor.
+ */
+module.exports = {
+  preset: '@react-native/jest-preset',
+  setupFilesAfterEnv: ['<rootDir>/src/tests/setup.ts'],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  testMatch: ['<rootDir>/src/**/*.test.ts', '<rootDir>/src/**/*.test.tsx'],
+  moduleNameMapper: {
+    '^@app/(.*)$': '<rootDir>/src/app/$1',
+    '^@api/(.*)$': '<rootDir>/src/api/$1',
+    '^@assets/(.*)$': '<rootDir>/src/assets/$1',
+    '^@components/(.*)$': '<rootDir>/src/components/$1',
+    '^@config/(.*)$': '<rootDir>/src/config/$1',
+    '^@constants/(.*)$': '<rootDir>/src/constants/$1',
+    '^@contexts/(.*)$': '<rootDir>/src/contexts/$1',
+    '^@design-system/(.*)$': '<rootDir>/src/design-system/$1',
+    '^@generated/(.*)$': '<rootDir>/src/generated/$1',
+    '^@hooks/(.*)$': '<rootDir>/src/hooks/$1',
+    '^@mocks/(.*)$': '<rootDir>/src/mocks/$1',
+    '^@modules/(.*)$': '<rootDir>/src/modules/$1',
+    '^@navigation/(.*)$': '<rootDir>/src/navigation/$1',
+    '^@offline/(.*)$': '<rootDir>/src/offline/$1',
+    '^@providers/(.*)$': '<rootDir>/src/providers/$1',
+    '^@queue/(.*)$': '<rootDir>/src/queue/$1',
+    '^@repositories/(.*)$': '<rootDir>/src/repositories/$1',
+    '^@screens/(.*)$': '<rootDir>/src/screens/$1',
+    '^@services/(.*)$': '<rootDir>/src/services/$1',
+    '^@storage/(.*)$': '<rootDir>/src/storage/$1',
+    '^@store/(.*)$': '<rootDir>/src/store/$1',
+    '^@app-types/(.*)$': '<rootDir>/src/types/$1',
+    '^@tests/(.*)$': '<rootDir>/src/tests/$1',
+    '^@theme/(.*)$': '<rootDir>/src/theme/$1',
+    '^@utils/(.*)$': '<rootDir>/src/utils/$1',
+
+    '^@app$': '<rootDir>/src/app',
+    '^@api$': '<rootDir>/src/api',
+    '^@components$': '<rootDir>/src/components',
+    '^@config$': '<rootDir>/src/config',
+    '^@constants$': '<rootDir>/src/constants',
+    '^@contexts$': '<rootDir>/src/contexts',
+    '^@design-system$': '<rootDir>/src/design-system',
+    '^@hooks$': '<rootDir>/src/hooks',
+    '^@mocks$': '<rootDir>/src/mocks',
+    '^@navigation$': '<rootDir>/src/navigation',
+    '^@offline$': '<rootDir>/src/offline',
+    '^@providers$': '<rootDir>/src/providers',
+    '^@queue$': '<rootDir>/src/queue',
+    '^@repositories$': '<rootDir>/src/repositories',
+    '^@screens$': '<rootDir>/src/screens',
+    '^@services$': '<rootDir>/src/services',
+    '^@storage$': '<rootDir>/src/storage',
+    '^@store$': '<rootDir>/src/store',
+    '^@app-types$': '<rootDir>/src/types',
+    '^@tests$': '<rootDir>/src/tests',
+    '^@theme$': '<rootDir>/src/theme',
+    '^@utils$': '<rootDir>/src/utils',
+
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
+  transformIgnorePatterns: [
+    'node_modules/(?!(?:.pnpm/)?(@react-native|react-native|@react-navigation|react-native-.*|@shopify/flash-list|@tanstack)/)',
+  ],
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx}',
+    '!src/**/*.test.{ts,tsx}',
+    '!src/generated/**',
+    '!src/mocks/**',
+    '!src/**/index.ts',
+  ],
+};

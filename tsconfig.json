@@ -1,0 +1,82 @@
+{
+  "extends": "@react-native/typescript-config",
+  "compilerOptions": {
+    "types": ["jest"],
+
+    /* Strictness: every flag below is deliberate. A shared codebase pays the
+       cost of loose types with runtime crashes in production, so we opt in to
+       the strictest practical setting from day one — retrofitting is far more
+       expensive than starting here. */
+    "strict": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* Absolute imports. Mirrored 1:1 in babel.config.js (runtime) and
+       jest.config.js (tests). All three must stay in sync.
+       Targets are relative (no `baseUrl`) because `baseUrl` is deprecated
+       from TypeScript 7. */
+    "paths": {
+      "@/*": ["./src/*"],
+      "@app/*": ["./src/app/*"],
+      "@api/*": ["./src/api/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@components/*": ["./src/components/*"],
+      "@config/*": ["./src/config/*"],
+      "@constants/*": ["./src/constants/*"],
+      "@contexts/*": ["./src/contexts/*"],
+      "@design-system/*": ["./src/design-system/*"],
+      "@generated/*": ["./src/generated/*"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@mocks/*": ["./src/mocks/*"],
+      "@modules/*": ["./src/modules/*"],
+      "@navigation/*": ["./src/navigation/*"],
+      "@offline/*": ["./src/offline/*"],
+      "@providers/*": ["./src/providers/*"],
+      "@queue/*": ["./src/queue/*"],
+      "@repositories/*": ["./src/repositories/*"],
+      "@screens/*": ["./src/screens/*"],
+      "@services/*": ["./src/services/*"],
+      "@storage/*": ["./src/storage/*"],
+      "@store/*": ["./src/store/*"],
+      "@app-types/*": ["./src/types/*"],
+      "@tests/*": ["./src/tests/*"],
+      "@theme/*": ["./src/theme/*"],
+      "@utils/*": ["./src/utils/*"],
+
+      "@app": ["./src/app/index.ts"],
+      "@api": ["./src/api/index.ts"],
+      "@components": ["./src/components/index.ts"],
+      "@config": ["./src/config/index.ts"],
+      "@constants": ["./src/constants/index.ts"],
+      "@contexts": ["./src/contexts/index.ts"],
+      "@design-system": ["./src/design-system/index.ts"],
+      "@hooks": ["./src/hooks/index.ts"],
+      "@mocks": ["./src/mocks/index.ts"],
+      "@navigation": ["./src/navigation/index.ts"],
+      "@offline": ["./src/offline/index.ts"],
+      "@providers": ["./src/providers/index.ts"],
+      "@queue": ["./src/queue/index.ts"],
+      "@repositories": ["./src/repositories/index.ts"],
+      "@screens": ["./src/screens/index.ts"],
+      "@services": ["./src/services/index.ts"],
+      "@storage": ["./src/storage/index.ts"],
+      "@store": ["./src/store/index.ts"],
+      "@app-types": ["./src/types/index.ts"],
+      "@tests": ["./src/tests/index.ts"],
+      "@theme": ["./src/theme/index.ts"],
+      "@utils": ["./src/utils/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "*.d.ts"],
+  "exclude": [
+    "**/node_modules",
+    "**/Pods",
+    "android",
+    "ios",
+    "src/generated/**"
+  ]
+}
