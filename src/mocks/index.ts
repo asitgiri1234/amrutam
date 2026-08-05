@@ -12,10 +12,11 @@
  *      layer over to mocks, which makes a reliable demo build possible without
  *      a network.
  *
- * NO DATASETS ARE GENERATED YET. The factories deliberately contain only the
- * vocabulary (specialities, categories, record types) plus a documented TODO —
- * the entity shapes belong to modules that do not exist, and guessing them
- * would guarantee divergence.
+ * NO DATASETS ARE GENERATED YET. The entity shapes now exist in `@models`, so
+ * the factories have a real target — each carries a documented TODO with the
+ * rules that apply (seeded, lazy above ~1000 rows, money in minor units).
+ * Generating fixtures before a screen consumes them produces data shaped for
+ * nothing in particular, so that step waits for the first module.
  */
 
 export {
@@ -35,29 +36,13 @@ export {
 } from './mockUtils';
 export type { BuildOptions, MockFactory, Random } from './mockUtils';
 
-export {
-  CITIES,
-  CONSULTATION_MODES,
-  LANGUAGES,
-  SPECIALITIES,
-} from './factories/doctor.factory';
-export type { ConsultationMode, Speciality } from './factories/doctor.factory';
+/* Fixture pools only. Domain vocabulary (specialities, categories, record
+ * types) is exported from `@models` and deliberately not mirrored here — the
+ * mock layer must never become a second place to learn what a Speciality is. */
 
+export { CITIES } from './factories/doctor.factory';
 export {
   INGREDIENTS,
   PRICE_RANGE_MINOR_UNITS,
-  PRODUCT_CATEGORIES,
-  PRODUCT_FORMS,
 } from './factories/product.factory';
-export type { ProductCategory, ProductForm } from './factories/product.factory';
-
-export {
-  ATTACHMENT_TYPES,
-  RECORD_DATE_RANGE_DAYS,
-  RECORD_TYPES,
-  VITAL_METRICS,
-} from './factories/healthRecord.factory';
-export type {
-  AttachmentType,
-  RecordType,
-} from './factories/healthRecord.factory';
+export { RECORD_DATE_RANGE_DAYS } from './factories/healthRecord.factory';

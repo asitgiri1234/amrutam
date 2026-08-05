@@ -29,3 +29,23 @@ export type {
   Readable,
   Updatable,
 } from './types';
+
+/* Entity contracts — interfaces only. Implementations arrive with modules. */
+export type {
+  AddCartItemInput,
+  BaseFilters,
+  BookingFilters,
+  BookingRepository,
+  CartRepository,
+  CreateBookingInput,
+  CreateHealthRecordInput,
+  DoctorFilters,
+  DoctorRepository,
+  HealthRecordFilters,
+  HealthRecordRepository,
+  ProductFilters,
+  ProductRepository,
+  RescheduleBookingInput,
+  SlotQuery,
+  UpdateCartItemInput,
+} from './contracts';

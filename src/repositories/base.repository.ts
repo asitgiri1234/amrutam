@@ -42,7 +42,15 @@ export abstract class BaseRepository<T extends Entity> {
 
   /* ---- Query key factory ---------------------------------------------
    * `as const` tuples so React Query's key inference stays precise and a
-   * typo becomes a type error rather than a silent cache miss. */
+   * typo becomes a type error rather than a silent cache miss.
+   *
+   * These are the GENERIC fallback, for repositories with no bespoke key
+   * shape. The five core entities have hand-written factories in
+   * `constants/query.constants.ts` (`QueryKeys.doctors`, `.products`, …)
+   * because they need extra branches — slots, slugs, related products — that
+   * a generic factory cannot express. A concrete repository should prefer the
+   * central registry and ignore these; two competing key systems for the same
+   * entity is exactly the drift the registry exists to prevent. */
 
   keys = {
     all: () => [this.namespace] as const,

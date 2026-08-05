@@ -1,14 +1,16 @@
 /**
  * WHY `types/` exists:
  *
- * Types that are genuinely *shared* across layers. Domain types (Doctor,
- * Product, HealthRecord) deliberately do NOT live here — they belong to their
- * module, next to the code that owns them. A global `types/` folder that
- * accumulates every entity becomes an unreviewable god-module that every file
- * imports, which defeats module boundaries entirely.
+ * Structural types shared across layers — `Result`, `Entity`, `AsyncState`,
+ * the API envelope. Things with no domain meaning.
  *
- * The rule: if two unrelated layers both need it, it lives here. Otherwise it
- * lives with its owner.
+ * Domain entities (Doctor, Product, HealthRecord, CartItem, Booking) do NOT
+ * live here. They live in `@models`, which is a deliberately separate folder:
+ * mixing "what shape is a paginated response" with "what is a prescription"
+ * in one barrel produces a god-module every file imports.
+ *
+ * The rule: `@app-types` is structure, `@models` is domain, and a module's own
+ * `types/` is anything only that module cares about.
  *
  * Aliased as `@app-types` (not `@types`) so it can never be confused with the
  * `@types/*` scope in node_modules.

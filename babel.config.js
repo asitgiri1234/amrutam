@@ -46,6 +46,7 @@ module.exports = {
           '@generated': './src/generated',
           '@hooks': './src/hooks',
           '@mocks': './src/mocks',
+          '@models': './src/models',
           '@modules': './src/modules',
           '@navigation': './src/navigation',
           '@offline': './src/offline',

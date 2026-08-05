@@ -16,28 +16,9 @@
  *      leave synthetic diagnoses in a real user's history.
  */
 
-export const RECORD_TYPES = [
-  'prescription',
-  'labReport',
-  'vitals',
-  'consultationNote',
-  'imaging',
-  'vaccination',
-] as const;
-
-export const VITAL_METRICS = [
-  { key: 'bloodPressure', label: 'Blood pressure', unit: 'mmHg' },
-  { key: 'heartRate', label: 'Heart rate', unit: 'bpm' },
-  { key: 'weight', label: 'Weight', unit: 'kg' },
-  { key: 'bloodSugar', label: 'Blood sugar', unit: 'mg/dL' },
-  { key: 'spo2', label: 'SpO2', unit: '%' },
-] as const;
-
-export const ATTACHMENT_TYPES = ['pdf', 'image'] as const;
+/* Record types, sources, vital metrics and attachment types live in `@models` —
+ * import them from there, not from here. Only fixture pools live below. */
 
 /** Records are spread across this window so the timeline UI has real grouping
  *  boundaries (today / this week / this month / older) to exercise. */
 export const RECORD_DATE_RANGE_DAYS = 730;
-
-export type RecordType = (typeof RECORD_TYPES)[number];
-export type AttachmentType = (typeof ATTACHMENT_TYPES)[number];

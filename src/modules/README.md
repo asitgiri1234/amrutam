@@ -46,9 +46,21 @@ modules/
 2. **Modules do not import each other's internals.** If two need the same
    thing, it moves down into a shared layer (`design-system/`, `utils/`,
    `components/`).
-3. **Domain types stay in the module.** `Doctor` belongs to
-   `modules/consultation/types`, not to `src/types`. A global types folder that
-   accumulates every entity becomes a god-module every file depends on.
+3. **Core entities are shared; module shapes are local.** This was refined when
+   the data layer landed. `Doctor`, `Product`, `HealthRecord`, `CartItem` and
+   `Booking` live in [`src/models/`](../models/index.ts), because a Booking
+   references a Doctor and a prescription is a HealthRecord produced by a
+   Booking — keeping `Doctor` inside `modules/consultation/` would force
+   `modules/health/` to import from a sibling module, which is exactly the
+   coupling these boundaries exist to prevent.
+
+   Everything that only serves one module's screens — view models, form
+   payloads, filter state, wizard steps — still lives in that module.
+   `BookingDraft` is the Consultation module's; `Booking` is shared.
+
+   The test: **if the API returns it and two modules read it, it is a core
+   entity.** Otherwise it stays local.
+
 4. **Server state is React Query; client state is the module's Zustand slice.**
    Never copy fetched data into the store.
 5. **A module registers itself with the shell** — it adds its navigator to

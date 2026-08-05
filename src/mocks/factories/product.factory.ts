@@ -12,29 +12,8 @@
  * exist to surface.
  */
 
-export const PRODUCT_CATEGORIES = [
-  'Immunity',
-  'Digestion',
-  'Skin & Hair',
-  'Joint Care',
-  'Sleep & Stress',
-  'Womens Health',
-  'Mens Health',
-  'Respiratory',
-  'Diabetes Care',
-  'Weight Management',
-] as const;
-
-export const PRODUCT_FORMS = [
-  'Churna',
-  'Tablet',
-  'Capsule',
-  'Syrup',
-  'Oil',
-  'Ghrita',
-  'Kadha',
-  'Lehyam',
-] as const;
+/* Categories, forms and stock statuses live in `@models` — import them from
+ * there, not from here. Only fixture pools live below. */
 
 /** Common ingredient names — used for search and filter fixtures. */
 export const INGREDIENTS = [
@@ -52,6 +31,3 @@ export const INGREDIENTS = [
 
 /** Realistic price band in paise: ₹99 – ₹4,999. */
 export const PRICE_RANGE_MINOR_UNITS = { min: 9_900, max: 499_900 } as const;
-
-export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number];
-export type ProductForm = (typeof PRODUCT_FORMS)[number];
