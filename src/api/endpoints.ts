@@ -27,6 +27,15 @@ export const Endpoints = {
   system: {
     health: () => '/health',
   },
+
+  consultation: {
+    doctors: () => '/doctors',
+    doctor: (doctorId: string) => `/doctors/${doctorId}`,
+    /** Slots are their own resource: they change by the minute and are queried
+     *  by date range, so bundling them into the profile would make it
+     *  uncacheable. */
+    doctorSlots: (doctorId: string) => `/doctors/${doctorId}/slots`,
+  },
 } as const;
 
 export type EndpointGroup = keyof typeof Endpoints;

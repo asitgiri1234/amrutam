@@ -88,6 +88,14 @@ export class MockDoctorRepository implements DoctorRepository {
           ? undefined
           : doctor => doctor.rating.average >= filters.minRating!,
 
+        filters.minExperienceYears === undefined
+          ? undefined
+          : doctor => doctor.experienceYears >= filters.minExperienceYears!,
+
+        filters.maxExperienceYears === undefined
+          ? undefined
+          : doctor => doctor.experienceYears < filters.maxExperienceYears!,
+
         filters.maxFeeMinor === undefined
           ? undefined
           : doctor =>

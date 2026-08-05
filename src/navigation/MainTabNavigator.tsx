@@ -17,8 +17,8 @@
 
 import { BORDER_WIDTH } from '@constants/layout.constants';
 import { Icon, type IconName } from '@design-system';
+import { DoctorListScreen } from '@modules/consultation';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { ConsultationScreen } from '@screens/ConsultationScreen';
 import { HealthRecordsScreen } from '@screens/HealthRecordsScreen';
 import { SettingsScreen } from '@screens/SettingsScreen';
 import { ShopScreen } from '@screens/ShopScreen';
@@ -73,7 +73,7 @@ export function MainTabNavigator() {
     >
       <Tab.Screen
         name="Consultation"
-        component={ConsultationScreen}
+        component={DoctorListScreen}
         options={{ title: 'Consult' }}
       />
       <Tab.Screen

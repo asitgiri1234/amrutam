@@ -1,7 +1,8 @@
 /**
  * Shop tab.
  *
- * INTENTIONALLY a placeholder — see `ConsultationScreen.tsx`.
+ * INTENTIONALLY a placeholder. Replaced by `@modules/shop` when that module
+ * lands, the way Consultation replaced its own placeholder.
  */
 
 import { ModulePlaceholder } from './ModulePlaceholder';

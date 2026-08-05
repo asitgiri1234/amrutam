@@ -1,7 +1,8 @@
 /**
  * Health Records tab.
  *
- * INTENTIONALLY a placeholder — see `ConsultationScreen.tsx`.
+ * INTENTIONALLY a placeholder. Replaced by `@modules/health` when that module
+ * lands, the way Consultation replaced its own placeholder.
  *
  * Note for whoever builds this: this module carries the strictest data
  * handling rules in the app. See `store/health.store.ts` for what must never

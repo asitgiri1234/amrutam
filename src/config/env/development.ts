@@ -20,7 +20,11 @@ export const developmentConfig: AppConfig = {
   enableAnalytics: false,
   enableDevTools: true,
 
-  useMockData: false,
+  // ON in development because there is no backend yet. The repository layer
+  // resolves to the mock implementation, so feature screens are built against
+  // the real contract with 35,000 generated fixtures behind it. Flip to false
+  // the day the dev API is reachable — nothing above the repository changes.
+  useMockData: true,
   enableOfflineCache: true,
   cacheTtlMs: 5 * 60 * 1000,
 };

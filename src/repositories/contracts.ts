@@ -60,6 +60,14 @@ export interface DoctorFilters extends BaseFilters {
   minRating?: number;
   /** Inclusive fee ceiling, in minor units — see `Money`. */
   maxFeeMinor?: number;
+  /**
+   * Experience bracket, in whole years. Two open-ended bounds rather than a
+   * named bracket enum: the UI's brackets ("5–10 years") are a presentation
+   * choice that will change with the design, and baking them into the wire
+   * contract would make every rebracketing an API change.
+   */
+  minExperienceYears?: number;
+  maxExperienceYears?: number;
   availableOn?: IsoDate;
   acceptingPatientsOnly?: boolean;
 }
