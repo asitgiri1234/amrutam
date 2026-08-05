@@ -105,8 +105,18 @@ export class CacheManager {
     return this.storage.contains(key);
   }
 
-  invalidate(key: string): void {
+  /**
+   * Drops one entry. `invalidate` is kept as an alias because "invalidate" is
+   * the verb the sync manager and React Query both use for the same idea, and
+   * forcing one name at every call site would read wrong in half of them.
+   */
+  remove(key: string): void {
     this.storage.delete(key);
+  }
+
+  /** @see remove */
+  invalidate(key: string): void {
+    this.remove(key);
   }
 
   /** Scoped invalidation, e.g. `invalidatePrefix('doctors:')` after a sync. */

@@ -33,6 +33,8 @@ function createId(): string {
 export class MutationQueue {
   private tasks: QueuedTask[] = [];
   private readonly listeners = new Set<QueueListener>();
+  /** Invalidated on every mutation; see `snapshot()` for why it must exist. */
+  private cachedSnapshot: QueueSnapshot | null = null;
 
   constructor(
     private readonly storage: KeyValueStorage = appStorage,
@@ -107,10 +109,43 @@ export class MutationQueue {
       .sort((a, b) => a.createdAt - b.createdAt)[0];
   }
 
+  /**
+   * Claims the next ready task: returns it AND marks it in-flight in one step.
+   *
+   * WHY this exists alongside `peek`: `peek` is a pure read, useful for "is
+   * there anything to do?". `dequeue` is the transactional claim a processor
+   * needs — separating read from claim leaves a window where two drains could
+   * pick up the same task and send it twice.
+   */
+  dequeue(now: number = Date.now()): QueuedTask | undefined {
+    const task = this.peek(now);
+
+    if (task === undefined) {
+      return undefined;
+    }
+
+    this.markInFlight(task.id);
+    return task;
+  }
+
   markInFlight(id: string): void {
     this.update(id, task => {
       task.status = 'inFlight';
       task.attempts += 1;
+    });
+  }
+
+  /**
+   * Puts a single task back in play immediately, resetting its attempt count.
+   * This is the "retry" a user triggers from a failed-sync banner, as opposed
+   * to the automatic backoff retry `markFailed` schedules.
+   */
+  retry(id: string): void {
+    this.update(id, task => {
+      task.status = 'pending';
+      task.attempts = 0;
+      task.nextAttemptAt = Date.now();
+      delete task.lastError;
     });
   }
 
@@ -182,13 +217,25 @@ export class MutationQueue {
     return count;
   }
 
+  /**
+   * Current counts by status.
+   *
+   * The result is CACHED and only recomputed when the queue actually changes.
+   * That reference stability is required, not an optimisation:
+   * `useSyncExternalStore` compares snapshots by identity, so returning a
+   * fresh object every call would re-render forever.
+   */
   snapshot(): QueueSnapshot {
-    return {
-      pending: this.count('pending'),
-      inFlight: this.count('inFlight'),
-      failed: this.count('failed'),
-      deadLettered: this.count('deadLettered'),
-    };
+    if (this.cachedSnapshot === null) {
+      this.cachedSnapshot = {
+        pending: this.count('pending'),
+        inFlight: this.count('inFlight'),
+        failed: this.count('failed'),
+        deadLettered: this.count('deadLettered'),
+      };
+    }
+
+    return this.cachedSnapshot;
   }
 
   subscribe(listener: QueueListener): () => void {
@@ -221,6 +268,10 @@ export class MutationQueue {
 
   private persist(): void {
     this.storage.setObject(this.storageKey, this.tasks);
+
+    // Invalidate BEFORE notifying, so every listener — and every
+    // `useSyncExternalStore` re-read it triggers — sees the new counts.
+    this.cachedSnapshot = null;
 
     const snapshot = this.snapshot();
     for (const listener of this.listeners) {

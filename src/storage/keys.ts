@@ -11,21 +11,32 @@
  */
 
 export const StorageKeys = {
-  /* ---- app bucket (survives logout) ----------------------------------- */
+  /* ---- app bucket (survives logout, NOT safe to clear) ---------------- */
   themePreference: 'app.ui.themePreference',
   onboardingCompleted: 'app.ui.onboardingCompleted',
   localeOverride: 'app.ui.locale',
   lastSyncedAt: 'app.sync.lastSyncedAt',
   installationId: 'app.device.installationId',
+  /**
+   * Pending offline writes.
+   *
+   * Namespaced `app.*`, NOT `cache.*`, and the distinction is load-bearing:
+   * this holds mutations the user has made that the server has not seen yet.
+   * Clearing it silently discards their work — an added cart item, a booking,
+   * an uploaded record. It lives in the app bucket and must survive any cache
+   * purge. (It was briefly named `cache.queue.mutations`, which invited
+   * exactly the deletion it must never suffer.)
+   */
+  mutationQueue: 'app.queue.mutations',
 
   /* ---- secure bucket (cleared on logout) ------------------------------ */
   accessToken: 'secure.auth.accessToken',
   refreshToken: 'secure.auth.refreshToken',
   sessionUserId: 'secure.auth.userId',
 
-  /* ---- cache bucket (safe to nuke at any time) ------------------------ */
+  /* ---- cache bucket (genuinely safe to nuke at any time) --------------- */
+  /** Dehydrated React Query cache. Everything here is re-fetchable. */
   queryCache: 'cache.query.persisted',
-  mutationQueue: 'cache.queue.mutations',
 } as const;
 
 export type StorageKey = (typeof StorageKeys)[keyof typeof StorageKeys];

@@ -19,7 +19,7 @@ import {
   Screen,
   Typography,
 } from '@design-system';
-import { useIsOnline } from '@hooks/useConnectivity';
+import { useIsOnline } from '@hooks/useNetworkStatus';
 import { useToast } from '@hooks/useToast';
 import { useNavigation } from '@react-navigation/native';
 import {

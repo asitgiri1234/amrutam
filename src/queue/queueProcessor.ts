@@ -105,7 +105,10 @@ export class QueueProcessor {
 
     try {
       while (this.running && isOnline()) {
-        const task = this.queue.peek();
+        // `dequeue` claims and marks in-flight in one step. Reading with
+        // `peek` and marking separately leaves a window where a second drain
+        // could claim the same task and send it twice.
+        const task = this.queue.dequeue();
 
         if (task === undefined) {
           break;
@@ -118,9 +121,8 @@ export class QueueProcessor {
     }
   }
 
+  /** @param task already claimed and marked in-flight by `dequeue`. */
   private async process(task: QueuedTask): Promise<void> {
-    this.queue.markInFlight(task.id);
-
     const handler = taskHandlers.get(task.type) ?? defaultHandler;
 
     try {

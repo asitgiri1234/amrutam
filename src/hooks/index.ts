@@ -11,7 +11,18 @@
  */
 
 export { useAppState, useOnForeground } from './useAppState';
-export { useConnectivity, useIsOnline } from './useConnectivity';
+export {
+  useConnectivity,
+  useIsExpensiveConnection,
+  useIsOnline,
+  useNetworkStatus,
+} from './useNetworkStatus';
+export { useOfflineQueue } from './useOfflineQueue';
+export type {
+  OfflineQueueControls,
+  OfflineQueueState,
+  UseOfflineQueueResult,
+} from './useOfflineQueue';
 export { useDebouncedValue } from './useDebouncedValue';
 export { useToast } from './useToast';
 

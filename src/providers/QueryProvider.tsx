@@ -1,7 +1,8 @@
 /**
- * QueryProvider — React Query wiring, plus the two native bridges it needs.
+ * QueryProvider — React Query wiring, the two native bridges it needs, and
+ * disk persistence.
  *
- * WHY these two effects live here and not in every screen:
+ * WHY these live here and not in every screen:
  *
  *  1. **AppState -> refetch.** React Query's `refetchOnWindowFocus` is a web
  *     concept; there is no window. Without this bridge, a user who backgrounds
@@ -13,6 +14,16 @@
  *     what makes `networkMode: 'offlineFirst'` and paused mutations behave
  *     correctly — otherwise queries fire into a dead socket and fail instead
  *     of waiting.
+ *
+ *  3. **Persistence.** Swaps in `PersistQueryClientProvider` when
+ *     `config.enableOfflineCache` is on, so a cold start restores the previous
+ *     session's cache instead of showing spinners with no network. What is and
+ *     is not written to disk is decided in `offline/queryPersistence.ts` — most
+ *     importantly, health data never is.
+ *
+ * The provider is chosen once at render rather than conditionally *inside* one
+ * tree, because swapping provider identity mid-session would remount every
+ * consumer below it.
  */
 
 import { useEffect, type ReactNode } from 'react';
@@ -21,7 +32,9 @@ import { AppState, type AppStateStatus } from 'react-native';
 
 import { queryClient } from '@api/queryClient';
 import {
+  createPersistOptions,
   getConnectivityStatus,
+  isQueryPersistenceEnabled,
   onConnectivityChange,
   startConnectivityListener,
 } from '@offline';
@@ -30,6 +43,7 @@ import {
   focusManager,
   onlineManager,
 } from '@tanstack/react-query';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 
 export interface QueryProviderProps {
   children: ReactNode;
@@ -66,7 +80,18 @@ export function QueryProvider({ children }: QueryProviderProps) {
     };
   }, []);
 
+  if (!isQueryPersistenceEnabled()) {
+    return (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+  }
+
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={createPersistOptions()}
+    >
+      {children}
+    </PersistQueryClientProvider>
   );
 }

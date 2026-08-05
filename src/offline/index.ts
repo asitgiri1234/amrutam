@@ -45,3 +45,13 @@ export {
   unregisterSyncTask,
 } from './syncManager';
 export type { SyncResult, SyncTask, SyncTrigger } from './syncManager';
+
+export {
+  clearPersistedQueryCache,
+  createPersistOptions,
+  createQueryPersister,
+  isQueryPersistenceEnabled,
+  PERSIST_BUSTER,
+  queryPersister,
+  shouldPersistQuery,
+} from './queryPersistence';
