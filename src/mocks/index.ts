@@ -6,25 +6,34 @@
  *      throwaway fixture and none of them survive to become tests.
  *   2. **Performance work needs volume.** The app's hardest UI problems —
  *      FlashList recycling, filter latency, image loading — only appear at
- *      10,000 rows. Generated data is the only practical way to get there, and
- *      it must be *seeded* so benchmarks are comparable run to run.
+ *      tens of thousands of rows. Generated data is the only practical way to
+ *      get there, and it must be *seeded* so benchmarks are comparable run to
+ *      run.
  *   3. **Demos and offline QA.** `config.useMockData` flips the repository
- *      layer over to mocks, which makes a reliable demo build possible without
- *      a network.
+ *      layer over to mocks, which makes a reliable demo build possible with no
+ *      network at all.
  *
- * NO DATASETS ARE GENERATED YET. The entity shapes now exist in `@models`, so
- * the factories have a real target — each carries a documented TODO with the
- * rules that apply (seeded, lazy above ~1000 rows, money in minor units).
- * Generating fixtures before a screen consumes them produces data shaped for
- * nothing in particular, so that step waits for the first module.
+ * THE COST MODEL, which is the thing to understand before using this:
+ *
+ *   `dataset.at(i)` / `.byId(id)`  O(1), one entity, no materialisation.
+ *   `dataset.stream()`            lazy; pay per item consumed.
+ *   `dataset.all()`               materialises once, then memoised. Only
+ *                                 list/search/filter needs it.
+ *
+ * Importing this module generates NOTHING. 35,000 fixtures exist only as a
+ * description until something asks a question that requires them.
  */
 
+/* ---- Generation primitives -------------------------------------------- */
 export {
   buildLazy,
   buildList,
+  buildOne,
   createRandom,
   DEFAULT_SEED,
+  deriveSeed,
   paginate,
+  parseSequentialId,
   pickMany,
   pickOne,
   randomBoolean,
@@ -36,13 +45,65 @@ export {
 } from './mockUtils';
 export type { BuildOptions, MockFactory, Random } from './mockUtils';
 
-/* Fixture pools only. Domain vocabulary (specialities, categories, record
- * types) is exported from `@models` and deliberately not mirrored here — the
- * mock layer must never become a second place to learn what a Speciality is. */
-
-export { CITIES } from './factories/doctor.factory';
+/* ---- Datasets ---------------------------------------------------------- */
+export { LazyDataset } from './datasets';
+export type { LazyDatasetOptions } from './datasets';
 export {
+  doctorDataset,
+  healthRecordDataset,
+  productDataset,
+  resetAllDatasets,
+} from './data';
+
+/* ---- Factories --------------------------------------------------------- */
+export {
+  buildDoctor,
+  buildSlotsForDay,
+  doctorFactory,
+  CITIES,
+  DOCTOR_COUNT,
+} from './factories/doctor.factory';
+export {
+  buildProduct,
+  productFactory,
   INGREDIENTS,
   PRICE_RANGE_MINOR_UNITS,
+  PRODUCT_COUNT,
 } from './factories/product.factory';
-export { RECORD_DATE_RANGE_DAYS } from './factories/healthRecord.factory';
+export {
+  buildHealthRecord,
+  healthRecordFactory,
+  HEALTH_RECORD_COUNT,
+  PATIENT_COUNT,
+  RECORD_DATE_RANGE_DAYS,
+} from './factories/healthRecord.factory';
+
+/* ---- Query engine ------------------------------------------------------ */
+export {
+  applyFilters,
+  matchesQuery,
+  paginateResult,
+  runQuery,
+  search,
+  sortItems,
+} from './query';
+export type {
+  PagedResult,
+  QueryPipelineOptions,
+  SearchableFields,
+} from './query';
+
+/* ---- Repository implementations ---------------------------------------- */
+export {
+  MockDoctorRepository,
+  mockDoctorRepository,
+} from './repositories/doctor.repository.mock';
+export {
+  MockProductRepository,
+  mockProductRepository,
+} from './repositories/product.repository.mock';
+export {
+  MockHealthRecordRepository,
+  mockHealthRecordRepository,
+  resetMockHealthRecords,
+} from './repositories/healthRecord.repository.mock';
