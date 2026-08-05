@@ -10,7 +10,7 @@
  * *notification* downstream is debounced, never the rendered value.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   Pressable,
@@ -23,7 +23,7 @@ import {
 
 import { SEARCH_DEBOUNCE_MS } from '@constants/app.constants';
 import { BORDER_WIDTH, MIN_TOUCH_TARGET } from '@constants/layout.constants';
-import { useTheme, type Theme } from '@theme';
+import { useTheme, useThemedStyles, type Theme } from '@theme';
 import { debounce } from '@utils/debounce';
 
 import { Icon } from './Icon';
@@ -44,7 +44,7 @@ export interface SearchBarProps {
   testID?: string;
 }
 
-export function SearchBar({
+function SearchBarComponent({
   onSearch,
   placeholder = 'Search',
   onChangeText,
@@ -57,7 +57,7 @@ export function SearchBar({
   testID = 'search-bar',
 }: SearchBarProps) {
   const theme = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles(createStyles);
   const inputRef = useRef<TextInput>(null);
   const [value, setValue] = useState(initialValue);
 
@@ -166,6 +166,14 @@ export function SearchBar({
     </View>
   );
 }
+
+/**
+ * Memoised: a search bar sits above a list that re-renders on every result
+ * update. Without this, the input re-renders mid-typing on every incoming
+ * page of data — which is exactly when it must stay responsive.
+ */
+export const SearchBar = memo(SearchBarComponent);
+SearchBar.displayName = 'SearchBar';
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({

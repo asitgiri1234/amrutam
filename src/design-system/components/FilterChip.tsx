@@ -12,6 +12,8 @@
  * filter chip actually is to a user.
  */
 
+import { memo } from 'react';
+
 import {
   Pressable,
   StyleSheet,
@@ -21,7 +23,7 @@ import {
 } from 'react-native';
 
 import { BORDER_WIDTH } from '@constants/layout.constants';
-import { useTheme, type Theme } from '@theme';
+import { useTheme, useThemedStyles, type Theme } from '@theme';
 
 import { Icon, type IconName } from './Icon';
 import { Typography } from './Typography';
@@ -42,7 +44,7 @@ export interface FilterChipProps {
   testID?: string;
 }
 
-export function FilterChip({
+function FilterChipComponent({
   label,
   selected,
   onPress,
@@ -54,7 +56,7 @@ export function FilterChip({
   testID,
 }: FilterChipProps) {
   const theme = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles(createStyles);
 
   const contentColor = disabled
     ? theme.colors.textDisabled
@@ -116,6 +118,14 @@ export function FilterChip({
     </Pressable>
   );
 }
+
+/**
+ * Memoised: filter rows are rendered as a group, and toggling one chip
+ * re-renders the parent. Only the chip whose `selected` actually flipped
+ * should re-render.
+ */
+export const FilterChip = memo(FilterChipComponent);
+FilterChip.displayName = 'FilterChip';
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({

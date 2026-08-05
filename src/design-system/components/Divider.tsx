@@ -8,6 +8,8 @@
  * and an inconsistent rule weight across screens.
  */
 
+import { memo, useMemo } from 'react';
+
 import { View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { BORDER_WIDTH } from '@constants/layout.constants';
@@ -25,7 +27,7 @@ export interface DividerProps {
   testID?: string;
 }
 
-export function Divider({
+function DividerComponent({
   orientation = 'horizontal',
   emphasis = 'default',
   inset = 'none',
@@ -35,38 +37,48 @@ export function Divider({
 }: DividerProps) {
   const theme = useTheme();
 
-  const color =
-    emphasis === 'strong' ? theme.colors.borderStrong : theme.colors.border;
-  const thickness = BORDER_WIDTH.thin;
-  const insetValue = theme.spacing[inset];
-  const spacingValue = theme.spacing[spacing];
+  // Built inline rather than via StyleSheet.create because every value here is
+  // prop-dependent — a stylesheet would need a cross product of four props.
+  const ruleStyle = useMemo<ViewStyle>(() => {
+    const color =
+      emphasis === 'strong' ? theme.colors.borderStrong : theme.colors.border;
+    const thickness = BORDER_WIDTH.thin;
+    const insetValue = theme.spacing[inset];
+    const spacingValue = theme.spacing[spacing];
+
+    return orientation === 'horizontal'
+      ? {
+          backgroundColor: color,
+          height: thickness,
+          marginLeft: insetValue,
+          marginVertical: spacingValue,
+          width: 'auto',
+        }
+      : {
+          alignSelf: 'stretch',
+          backgroundColor: color,
+          marginHorizontal: spacingValue,
+          marginTop: insetValue,
+          width: thickness,
+        };
+  }, [emphasis, inset, orientation, spacing, theme]);
 
   return (
-    <View
-      testID={testID}
-      accessibilityRole="none"
-      style={[
-        orientation === 'horizontal'
-          ? {
-              height: thickness,
-              marginLeft: insetValue,
-              marginVertical: spacingValue,
-              width: 'auto',
-            }
-          : {
-              alignSelf: 'stretch',
-              marginHorizontal: spacingValue,
-              marginTop: insetValue,
-              width: thickness,
-            },
-        { backgroundColor: color },
-        style,
-      ]}
-    />
+    <View testID={testID} accessibilityRole="none" style={[ruleStyle, style]} />
   );
 }
 
-/** Convenience for FlashList/FlatList `ItemSeparatorComponent`. */
-export function ListDivider() {
+/**
+ * Memoised: a divider between every row of a long list is the single most
+ * duplicated element in the app, and its props never change once rendered.
+ */
+export const Divider = memo(DividerComponent);
+Divider.displayName = 'Divider';
+
+function ListDividerComponent() {
   return <Divider inset="lg" />;
 }
+
+/** Convenience for FlashList/FlatList `ItemSeparatorComponent`. */
+export const ListDivider = memo(ListDividerComponent);
+ListDivider.displayName = 'ListDivider';

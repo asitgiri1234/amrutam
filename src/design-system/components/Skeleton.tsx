@@ -12,7 +12,7 @@
  * JS-driven animation would freeze exactly when it needs to be smooth.
  */
 
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
@@ -25,7 +25,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { useTheme, type RadiusKey, type Theme } from '@theme';
+import { useTheme, useThemedStyles, type RadiusKey, type Theme } from '@theme';
 
 export interface SkeletonProps {
   width?: number | `${number}%`;
@@ -38,7 +38,7 @@ export interface SkeletonProps {
   testID?: string;
 }
 
-export function Skeleton({
+function SkeletonComponent({
   width = '100%',
   height = 16,
   radius = 'sm',
@@ -91,12 +91,16 @@ export function Skeleton({
 }
 
 /**
- * A ready-made row placeholder: avatar + two lines. Covers the shape of the
- * doctor list, order list and health-record list, which is most of the app.
+ * Memoised, and this one matters more than most: a skeleton screen renders
+ * ten-plus of these at once, each driving its own repeating UI-thread
+ * animation. A parent re-render that restarted all of them would produce a
+ * visibly stuttering shimmer — the exact opposite of the component's purpose.
  */
-export function SkeletonListItem({ testID }: { testID?: string }) {
-  const theme = useTheme();
-  const styles = createStyles(theme);
+export const Skeleton = memo(SkeletonComponent);
+Skeleton.displayName = 'Skeleton';
+
+function SkeletonListItemComponent({ testID }: { testID?: string }) {
+  const styles = useThemedStyles(createStyles);
 
   return (
     <View style={styles.row} testID={testID}>
@@ -108,6 +112,13 @@ export function SkeletonListItem({ testID }: { testID?: string }) {
     </View>
   );
 }
+
+/**
+ * A ready-made row placeholder: avatar + two lines. Covers the shape of the
+ * doctor list, order list and health-record list, which is most of the app.
+ */
+export const SkeletonListItem = memo(SkeletonListItemComponent);
+SkeletonListItem.displayName = 'SkeletonListItem';
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({

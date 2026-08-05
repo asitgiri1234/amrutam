@@ -14,9 +14,11 @@
  * `requestId`, which is also what lands in crash reporting.
  */
 
+import { memo } from 'react';
+
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { useTheme, type Theme } from '@theme';
+import { useTheme, useThemedStyles, type Theme } from '@theme';
 
 import { Button } from './Button';
 import { Icon, type IconName } from './Icon';
@@ -63,7 +65,7 @@ const VARIANT_COPY: Record<ErrorStateVariant, VariantCopy> = {
   },
 };
 
-export function ErrorState({
+function ErrorStateComponent({
   variant = 'generic',
   title,
   description,
@@ -75,7 +77,7 @@ export function ErrorState({
   testID = 'error-state',
 }: ErrorStateProps) {
   const theme = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles(createStyles);
   const copy = VARIANT_COPY[variant];
 
   const resolvedTitle = title ?? copy.title;
@@ -133,6 +135,9 @@ export function ErrorState({
     </View>
   );
 }
+
+export const ErrorState = memo(ErrorStateComponent);
+ErrorState.displayName = 'ErrorState';
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({

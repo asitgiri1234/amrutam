@@ -9,7 +9,7 @@
  * at a glance, and stable across sessions without storing anything.
  */
 
-import { useState } from 'react';
+import { memo, useState } from 'react';
 
 import {
   Image,
@@ -20,7 +20,7 @@ import {
 } from 'react-native';
 
 import { AVATAR_SIZE, BORDER_WIDTH } from '@constants/layout.constants';
-import { useTheme, type Theme } from '@theme';
+import { useTheme, useThemedStyles, type Theme } from '@theme';
 import { initials as toInitials } from '@utils/formatter';
 
 import { Icon } from './Icon';
@@ -69,7 +69,7 @@ function resolveSize(size: AvatarProps['size']): number {
   return AVATAR_SIZE[size ?? 'md'];
 }
 
-export function Avatar({
+function AvatarComponent({
   uri,
   name,
   size = 'md',
@@ -79,7 +79,7 @@ export function Avatar({
   testID,
 }: AvatarProps) {
   const theme = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles(createStyles);
   const [failed, setFailed] = useState(false);
 
   const dimension = resolveSize(size);
@@ -154,6 +154,14 @@ export function Avatar({
     </View>
   );
 }
+
+/**
+ * Memoised: avatars appear once per row in every list in the app, and the
+ * image-failure state lives in local state — a parent re-render must not
+ * discard it and retry a 404 on every scroll frame.
+ */
+export const Avatar = memo(AvatarComponent);
+Avatar.displayName = 'Avatar';
 
 const createStyles = (_theme: Theme) =>
   StyleSheet.create({

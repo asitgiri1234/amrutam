@@ -13,7 +13,7 @@
  * the user might miss.
  */
 
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -23,7 +23,12 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { useTheme, type Theme, type ThemeColors } from '@theme';
+import {
+  useTheme,
+  useThemedStyles,
+  type Theme,
+  type ThemeColors,
+} from '@theme';
 
 import { Icon, type IconName } from './Icon';
 import { Typography } from './Typography';
@@ -73,9 +78,9 @@ export interface ToastProps {
   onDismiss: (id: string) => void;
 }
 
-export function Toast({ toast, onDismiss }: ToastProps) {
+function ToastComponent({ toast, onDismiss }: ToastProps) {
   const theme = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles(createStyles);
   const tokens = VARIANTS[toast.variant];
 
   const enterProgress = useSharedValue(0);
@@ -143,6 +148,14 @@ export function Toast({ toast, onDismiss }: ToastProps) {
     </Animated.View>
   );
 }
+
+/**
+ * Memoised: the host re-renders whenever ANY toast is added or expires, so
+ * without this every visible toast would re-run its entrance animation each
+ * time a sibling appeared.
+ */
+export const Toast = memo(ToastComponent);
+Toast.displayName = 'Toast';
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({

@@ -14,7 +14,7 @@
  * accidental tap must not cancel the flow.
  */
 
-import type { ReactNode } from 'react';
+import { memo, type ReactNode } from 'react';
 
 import {
   Modal as RNModal,
@@ -27,7 +27,7 @@ import {
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useTheme, type Theme } from '@theme';
+import { useTheme, useThemedStyles, type Theme } from '@theme';
 
 import { Divider } from './Divider';
 import { Icon } from './Icon';
@@ -51,7 +51,7 @@ export interface ModalProps {
   testID?: string;
 }
 
-export function Modal({
+function ModalComponent({
   visible,
   onClose,
   children,
@@ -64,7 +64,7 @@ export function Modal({
   testID = 'modal',
 }: ModalProps) {
   const theme = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles(createStyles);
   const insets = useSafeAreaInsets();
 
   const handleScrimPress = dismissible ? onClose : undefined;
@@ -156,6 +156,14 @@ export function Modal({
     </RNModal>
   );
 }
+
+/**
+ * Memoised because a Modal is almost always mounted by a screen that
+ * re-renders for unrelated reasons (a form field changing). Re-rendering a
+ * closed modal's whole subtree on every keystroke is pure waste.
+ */
+export const Modal = memo(ModalComponent);
+Modal.displayName = 'Modal';
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({

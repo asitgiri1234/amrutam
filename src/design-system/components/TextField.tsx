@@ -14,7 +14,13 @@
  *   - the touch target wraps the label + input, not just the input box
  */
 
-import { forwardRef, useCallback, useState, type ComponentRef } from 'react';
+import {
+  forwardRef,
+  memo,
+  useCallback,
+  useState,
+  type ComponentRef,
+} from 'react';
 
 import {
   Pressable,
@@ -27,7 +33,7 @@ import {
 } from 'react-native';
 
 import { BORDER_WIDTH, MIN_TOUCH_TARGET } from '@constants/layout.constants';
-import { useTheme, type Theme } from '@theme';
+import { useTheme, useThemedStyles, type Theme } from '@theme';
 
 import { Icon, type IconName } from './Icon';
 import { Typography } from './Typography';
@@ -56,7 +62,7 @@ type TextInputRef = ComponentRef<typeof TextInput>;
 type FocusEventArg = Parameters<NonNullable<TextInputProps['onFocus']>>[0];
 type BlurEventArg = Parameters<NonNullable<TextInputProps['onBlur']>>[0];
 
-export const TextField = forwardRef<TextInputRef, TextFieldProps>(
+const TextFieldComponent = forwardRef<TextInputRef, TextFieldProps>(
   (
     {
       label,
@@ -77,7 +83,7 @@ export const TextField = forwardRef<TextInputRef, TextFieldProps>(
     ref,
   ) => {
     const theme = useTheme();
-    const styles = createStyles(theme);
+    const styles = useThemedStyles(createStyles);
     const [focused, setFocused] = useState(false);
 
     const hasError = typeof error === 'string' && error.length > 0;
@@ -193,7 +199,16 @@ export const TextField = forwardRef<TextInputRef, TextFieldProps>(
   },
 );
 
-TextField.displayName = 'TextField';
+TextFieldComponent.displayName = 'TextField';
+
+/**
+ * `memo(forwardRef(...))` — the order matters. Wrapping the other way round
+ * loses the ref, which would break React Hook Form's `register`.
+ *
+ * Worth memoising because a form re-renders on every keystroke in any field;
+ * without this, typing in one input re-renders all of them.
+ */
+export const TextField = memo(TextFieldComponent);
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
