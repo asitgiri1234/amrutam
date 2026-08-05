@@ -12,7 +12,13 @@
  *     setting degrades gracefully instead of destroying every layout
  */
 
-import { forwardRef, type ComponentRef, type ReactNode } from 'react';
+import {
+  forwardRef,
+  memo,
+  useMemo,
+  type ComponentRef,
+  type ReactNode,
+} from 'react';
 
 import {
   StyleSheet,
@@ -72,7 +78,7 @@ export interface TypographyProps extends Omit<RNTextProps, 'style'> {
   children?: ReactNode;
 }
 
-export const Typography = forwardRef<
+const TypographyComponent = forwardRef<
   ComponentRef<typeof RNText>,
   TypographyProps
 >(
@@ -90,15 +96,23 @@ export const Typography = forwardRef<
   ) => {
     const theme = useTheme();
 
+    // Flattening allocates a new style object each render; memoising it keeps
+    // long lists of text nodes from churning the style registry.
+    const flatStyle = useMemo(
+      () =>
+        StyleSheet.flatten([
+          resolveTextStyle(theme, variant, tone),
+          align === undefined ? undefined : { textAlign: align },
+          style,
+        ]),
+      [align, style, theme, tone, variant],
+    );
+
     return (
       <RNText
         ref={ref}
         maxFontSizeMultiplier={maxFontSizeMultiplier}
-        style={StyleSheet.flatten([
-          resolveTextStyle(theme, variant, tone),
-          align === undefined ? undefined : { textAlign: align },
-          style,
-        ])}
+        style={flatStyle}
         {...rest}
       >
         {children}
@@ -107,7 +121,13 @@ export const Typography = forwardRef<
   },
 );
 
-Typography.displayName = 'Typography';
+TypographyComponent.displayName = 'Typography';
+
+/**
+ * Memoised: Text is by far the most-instantiated component in the app — a
+ * single doctor card holds five of them. This is the memo that actually pays.
+ */
+export const Typography = memo(TypographyComponent);
 
 function resolveTextStyle(
   theme: Theme,

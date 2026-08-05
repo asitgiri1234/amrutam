@@ -16,6 +16,7 @@
  */
 
 export { ConsultationScreen } from './ConsultationScreen';
+export { DesignSystemScreen } from './DesignSystemScreen';
 export { HealthRecordsScreen } from './HealthRecordsScreen';
 export { ModulePlaceholder } from './ModulePlaceholder';
 export { NotFoundScreen } from './NotFoundScreen';

@@ -14,8 +14,13 @@
 
 import { StyleSheet, View } from 'react-native';
 
-import { Screen } from '@components/Screen';
-import { Card, EmptyState, Typography, type IconName } from '@design-system';
+import {
+  Card,
+  EmptyState,
+  Screen,
+  Typography,
+  type IconName,
+} from '@design-system';
 import { useTheme, type Theme } from '@theme';
 
 export interface ModulePlaceholderProps {

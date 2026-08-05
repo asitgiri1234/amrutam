@@ -36,6 +36,12 @@ export type RootStackParamList = {
   /** The tab shell. */
   Main: NavigatorScreenParams<MainTabParamList>;
   /**
+   * Developer-only preview of the shared design system, opened from Settings.
+   * It sits on the root stack rather than inside the Settings tab so it covers
+   * the tab bar — full-width component previews are the point.
+   */
+  DesignSystem: undefined;
+  /**
    * Placeholder for the modal group modules will add. Kept so the root stack
    * demonstrably supports more than one screen and the pattern is obvious.
    */

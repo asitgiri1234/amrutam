@@ -7,8 +7,7 @@
  * navigation error.
  */
 
-import { Screen } from '@components/Screen';
-import { ErrorState } from '@design-system';
+import { ErrorState, Screen } from '@design-system';
 import type { RootStackScreenProps } from '@navigation/types';
 
 export function NotFoundScreen({

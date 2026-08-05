@@ -71,6 +71,9 @@ export function Skeleton({
   return (
     <Animated.View
       testID={testID}
+      // Same reason as Loader: without `accessible`, the progressbar role is
+      // never exposed and the placeholder is silent to assistive tech.
+      accessible
       accessibilityRole="progressbar"
       accessibilityLabel="Loading content"
       style={[

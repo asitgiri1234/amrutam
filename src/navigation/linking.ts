@@ -27,6 +27,7 @@ export const linking: LinkingOptions<RootStackParamList> = {
           Settings: 'settings',
         },
       },
+      DesignSystem: 'dev/design-system',
       NotFound: '*',
     },
   },

@@ -1,15 +1,20 @@
 /**
  * WHY `components/` exists alongside `design-system/`:
  *
- *   design-system/  primitives with zero app knowledge. A Button does not know
- *                   this is a healthcare app. Reusable in any product.
- *   components/     app-level compositions that DO know about this app — a
- *                   Screen shell that understands our tab-bar layout, an
- *                   ErrorBoundary wired to our crash reporter.
+ *   design-system/  presentational primitives with zero app knowledge — a
+ *                   Button does not know this is a healthcare app, and a
+ *                   Screen only knows about safe areas and the theme. Both
+ *                   are reusable in any product.
+ *   components/     compositions wired to app *infrastructure* — the
+ *                   ErrorBoundary reports to our crash reporter, and its
+ *                   fallback reads our environment config.
  *
- * Both are shared; the difference is *what they are allowed to know*. Keeping
- * the primitives ignorant is what makes them safe to change, and what would
- * let the design system be extracted into its own package later.
+ * The dividing line is dependency direction, not complexity: nothing in
+ * `design-system/` may import from `services/`, `config/` or `api/`. That is
+ * what would let the design system be extracted into its own package.
+ *
+ * `Screen` lives in `design-system/` for exactly that reason — it composes
+ * Loader and ErrorState and touches nothing but the theme.
  *
  * Anything used by only one feature belongs in that module, not here.
  */
@@ -19,6 +24,3 @@ export type { ErrorBoundaryProps } from './ErrorBoundary';
 
 export { ErrorFallback } from './ErrorFallback';
 export type { ErrorFallbackProps } from './ErrorFallback';
-
-export { Screen } from './Screen';
-export type { ScreenProps } from './Screen';

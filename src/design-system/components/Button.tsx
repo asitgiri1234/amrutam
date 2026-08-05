@@ -15,7 +15,7 @@
  *    through hitSlop rather than visual padding.
  */
 
-import { useCallback } from 'react';
+import { memo, useCallback } from 'react';
 
 import {
   ActivityIndicator,
@@ -37,7 +37,12 @@ import {
   HIT_SLOP,
   MIN_TOUCH_TARGET,
 } from '@constants/layout.constants';
-import { useTheme, type Theme, type ThemeColors } from '@theme';
+import {
+  useTheme,
+  useThemedStyles,
+  type Theme,
+  type ThemeColors,
+} from '@theme';
 
 import { Icon, type IconName } from './Icon';
 import { Typography } from './Typography';
@@ -121,7 +126,7 @@ const SIZES: Record<ButtonSize, SizeTokens> = {
   lg: { height: 52, paddingHorizontal: 20, gap: 10 },
 };
 
-export function Button({
+function ButtonComponent({
   label,
   onPress,
   variant = 'primary',
@@ -136,7 +141,7 @@ export function Button({
   testID,
 }: ButtonProps) {
   const theme = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles(createStyles);
 
   const isInteractive = !disabled && !loading;
   const tokens = VARIANTS[variant];
@@ -230,6 +235,14 @@ export function Button({
     </Animated.View>
   );
 }
+
+/**
+ * Memoised with a caveat worth knowing: this only helps when `onPress` is
+ * referentially stable. A caller writing `onPress={() => …}` inline defeats it.
+ * Wrap handlers in `useCallback` at the call site inside lists.
+ */
+export const Button = memo(ButtonComponent);
+Button.displayName = 'Button';
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({

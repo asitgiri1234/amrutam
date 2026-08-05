@@ -15,6 +15,7 @@ import { useCallback, useRef } from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { DesignSystemScreen } from '@screens/DesignSystemScreen';
 import { NotFoundScreen } from '@screens/NotFoundScreen';
 import { toNavigationTheme, useTheme } from '@theme';
 import { logger } from '@utils/logger';
@@ -65,6 +66,11 @@ export function RootNavigator() {
         }}
       >
         <Stack.Screen name="Main" component={MainTabNavigator} />
+        <Stack.Screen
+          name="DesignSystem"
+          component={DesignSystemScreen}
+          options={{ headerShown: true, title: 'Design system' }}
+        />
         <Stack.Screen
           name="NotFound"
           component={NotFoundScreen}

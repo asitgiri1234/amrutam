@@ -12,9 +12,11 @@
  * messages for users who simply have no orders yet.
  */
 
+import { memo } from 'react';
+
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { useTheme, type Theme } from '@theme';
+import { useTheme, useThemedStyles, type Theme } from '@theme';
 
 import { Button } from './Button';
 import { Icon, type IconName } from './Icon';
@@ -36,7 +38,7 @@ export interface EmptyStateProps {
   testID?: string;
 }
 
-export function EmptyState({
+function EmptyStateComponent({
   title,
   description,
   icon = 'inbox',
@@ -49,7 +51,7 @@ export function EmptyState({
   testID = 'empty-state',
 }: EmptyStateProps) {
   const theme = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles(createStyles);
 
   return (
     <View
@@ -95,6 +97,9 @@ export function EmptyState({
     </View>
   );
 }
+
+export const EmptyState = memo(EmptyStateComponent);
+EmptyState.displayName = 'EmptyState';
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({

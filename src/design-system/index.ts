@@ -56,6 +56,9 @@ export type { LoaderProps } from './components/Loader';
 export { Modal } from './components/Modal';
 export type { ModalPresentation, ModalProps } from './components/Modal';
 
+export { Screen } from './components/Screen';
+export type { ScreenProps } from './components/Screen';
+
 export { SearchBar } from './components/SearchBar';
 export type { SearchBarProps } from './components/SearchBar';
 

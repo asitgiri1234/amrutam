@@ -1,16 +1,19 @@
 /**
- * Screen — the standard page shell.
+ * Screen — the standard page shell, and the design system's layout primitive.
  *
  * WHY every screen should use it instead of a bare `View`:
  *   - safe-area insets applied on the correct edges (a screen inside a tab
  *     navigator must NOT pad the bottom; the tab bar already does)
  *   - themed background, so a screen is never white in dark mode
  *   - a single, consistent decision about keyboard avoidance
- *   - `loading` / `error` / `empty` slots, so every screen in the app handles
- *     those four states identically without each author re-deciding
+ *   - `loading` / `error` slots, so every screen in the app handles those
+ *     states identically without each author re-deciding
  *
  * That last point is the real payoff. Four product areas built by four people
  * otherwise produce four different loading treatments.
+ *
+ * Deliberately NOT memoised: there is exactly one Screen mounted per route, so
+ * `memo` would add a props comparison that can never pay for itself.
  */
 
 import type { ReactNode } from 'react';
@@ -27,8 +30,10 @@ import {
 
 import { type Edge, SafeAreaView } from 'react-native-safe-area-context';
 
-import { ErrorState, Loader } from '@design-system';
-import { useTheme, type Theme } from '@theme';
+import { useThemedStyles, type Theme } from '@theme';
+
+import { ErrorState } from './ErrorState';
+import { Loader } from './Loader';
 
 export interface ScreenProps {
   children: ReactNode;
@@ -66,8 +71,7 @@ export function Screen({
   contentContainerStyle,
   testID,
 }: ScreenProps) {
-  const theme = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles(createStyles);
 
   const body = loading ? (
     <Loader fullscreen label="Loading" />

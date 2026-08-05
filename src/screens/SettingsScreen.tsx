@@ -9,14 +9,22 @@
 
 import { StyleSheet, View } from 'react-native';
 
-import { Screen } from '@components/Screen';
 import { APP_ENV, config } from '@config';
 import { APP_NAME } from '@constants/app.constants';
-import { Card, Divider, FilterChip, Typography } from '@design-system';
+import {
+  Card,
+  Divider,
+  FilterChip,
+  Icon,
+  Screen,
+  Typography,
+} from '@design-system';
 import { useIsOnline } from '@hooks/useConnectivity';
 import { useToast } from '@hooks/useToast';
+import { useNavigation } from '@react-navigation/native';
 import {
   useTheme,
+  useThemedStyles,
   useThemePreference,
   type Theme,
   type ThemePreference,
@@ -30,10 +38,11 @@ const PREFERENCES: Array<{ value: ThemePreference; label: string }> = [
 
 export function SettingsScreen() {
   const theme = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles(createStyles);
   const { preference, setPreference } = useThemePreference();
   const isOnline = useIsOnline();
   const toast = useToast();
+  const navigation = useNavigation();
 
   const handlePreferenceChange = (next: ThemePreference) => {
     setPreference(next);
@@ -64,6 +73,35 @@ export function SettingsScreen() {
         </View>
       </Card>
 
+      <Card
+        variant="outlined"
+        padding="lg"
+        style={styles.card}
+        onPress={() => navigation.navigate('DesignSystem')}
+        accessibilityLabel="Open the design system showcase"
+        testID="open-design-system"
+      >
+        <View style={styles.linkRow}>
+          <View style={styles.linkText}>
+            <Typography variant="overline" tone="tertiary">
+              Developer
+            </Typography>
+            <Typography variant="h4" style={styles.linkTitle}>
+              Design system
+            </Typography>
+            <Typography variant="bodySmall" tone="secondary">
+              Preview every shared component in the current theme.
+            </Typography>
+          </View>
+
+          <Icon
+            name="chevronRight"
+            size="lg"
+            color={theme.colors.textTertiary}
+          />
+        </View>
+      </Card>
+
       <Card variant="outlined" padding="lg" style={styles.card}>
         <Typography variant="overline" tone="tertiary">
           Diagnostics
@@ -91,8 +129,7 @@ export function SettingsScreen() {
 }
 
 function Row({ label, value }: { label: string; value: string }) {
-  const theme = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles(createStyles);
 
   return (
     <View style={styles.row}>
@@ -119,6 +156,18 @@ const createStyles = (theme: Theme) =>
       rowGap: theme.spacing.sm,
     },
     hint: {
+      marginTop: theme.spacing.xs,
+    },
+    linkRow: {
+      alignItems: 'center',
+      columnGap: theme.spacing.md,
+      flexDirection: 'row',
+    },
+    linkText: {
+      flex: 1,
+    },
+    linkTitle: {
+      marginBottom: theme.spacing.xxs,
       marginTop: theme.spacing.xs,
     },
     row: {

@@ -11,6 +11,8 @@
  *     readers, so a blocking load is not a silent void for assistive tech.
  */
 
+import { memo } from 'react';
+
 import {
   ActivityIndicator,
   StyleSheet,
@@ -19,7 +21,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 
-import { useTheme, type Theme } from '@theme';
+import { useTheme, useThemedStyles, type Theme } from '@theme';
 
 import { Typography } from './Typography';
 
@@ -35,7 +37,7 @@ export interface LoaderProps {
   testID?: string;
 }
 
-export function Loader({
+function LoaderComponent({
   size = 'small',
   color,
   fullscreen = false,
@@ -44,11 +46,15 @@ export function Loader({
   testID = 'loader',
 }: LoaderProps) {
   const theme = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles(createStyles);
 
   return (
     <View
       testID={testID}
+      // `accessible` collapses the spinner and its label into ONE element.
+      // Without it, a screen reader announces the indicator and the caption
+      // separately, and the progressbar role is not exposed at all.
+      accessible
       accessibilityRole="progressbar"
       accessibilityLabel={label ?? 'Loading'}
       accessibilityState={{ busy: true }}
@@ -63,6 +69,11 @@ export function Loader({
     </View>
   );
 }
+
+/** Memoised: props are almost always literals, so a parent re-render should
+ *  not restart the spinner's reconciliation. */
+export const Loader = memo(LoaderComponent);
+Loader.displayName = 'Loader';
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({

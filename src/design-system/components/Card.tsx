@@ -13,7 +13,7 @@
  *   filled   — recessed, for secondary/inline content
  */
 
-import type { ReactNode } from 'react';
+import { memo, useMemo, type ReactNode } from 'react';
 
 import {
   Pressable,
@@ -24,7 +24,12 @@ import {
 } from 'react-native';
 
 import { BORDER_WIDTH } from '@constants/layout.constants';
-import { useTheme, type ElevationLevel, type Theme } from '@theme';
+import {
+  useTheme,
+  useThemedStyles,
+  type ElevationLevel,
+  type Theme,
+} from '@theme';
 
 export type CardVariant = 'elevated' | 'outlined' | 'filled';
 export type CardPadding = 'none' | 'sm' | 'md' | 'lg';
@@ -42,7 +47,7 @@ export interface CardProps {
   testID?: string;
 }
 
-export function Card({
+function CardComponent({
   children,
   variant = 'elevated',
   padding = 'md',
@@ -53,7 +58,7 @@ export function Card({
   testID,
 }: CardProps) {
   const theme = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles(createStyles);
 
   const paddingValue = {
     none: theme.spacing.none,
@@ -62,20 +67,26 @@ export function Card({
     lg: theme.spacing.xxl,
   }[padding];
 
-  const variantStyle: ViewStyle = {
-    elevated: {
-      backgroundColor: theme.colors.surfaceElevated,
-      ...theme.elevation[elevation ?? 'sm'],
-    },
-    outlined: {
-      backgroundColor: theme.colors.surface,
-      borderColor: theme.colors.border,
-      borderWidth: BORDER_WIDTH.thin,
-    },
-    filled: {
-      backgroundColor: theme.colors.surfaceSunken,
-    },
-  }[variant];
+  // Worth memoising specifically because the `elevated` branch spreads a
+  // platform shadow object; the others are cheap but must share the cache key.
+  const variantStyle = useMemo<ViewStyle>(
+    () =>
+      ({
+        elevated: {
+          backgroundColor: theme.colors.surfaceElevated,
+          ...theme.elevation[elevation ?? 'sm'],
+        },
+        outlined: {
+          backgroundColor: theme.colors.surface,
+          borderColor: theme.colors.border,
+          borderWidth: BORDER_WIDTH.thin,
+        },
+        filled: {
+          backgroundColor: theme.colors.surfaceSunken,
+        },
+      }[variant]),
+    [elevation, theme, variant],
+  );
 
   const content = (
     <View style={[styles.base, variantStyle, { padding: paddingValue }, style]}>
@@ -104,6 +115,14 @@ export function Card({
     </Pressable>
   );
 }
+
+/**
+ * Memoised: cards are the dominant element in every list in the app
+ * (doctors, products, records). Re-rendering a screen must not re-render
+ * every card that did not change.
+ */
+export const Card = memo(CardComponent);
+Card.displayName = 'Card';
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
